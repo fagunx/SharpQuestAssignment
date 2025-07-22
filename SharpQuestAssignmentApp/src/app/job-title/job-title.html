@@ -1,0 +1,47 @@
+<div class="job-title-container">
+  <!-- Header Section -->
+  <div class="header">
+    <h1>Job Title List</h1>
+    <p class="subtitle">View all job titles with their salary ranges and current openings.</p>
+  </div>
+
+  <!-- Job Count -->
+  <div class="job-count">
+    Showing {{ filteredJobTitles.length }} of {{ jobTitles.length }} job titles
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading job titles...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadJobTitles()" class="retry-btn">Try Again</button>
+  </div>
+
+  <!-- Job Cards Grid -->
+  <div *ngIf="filteredJobTitles.length > 0" class="job-cards-grid">
+    <div *ngFor="let job of filteredJobTitles" class="job-card">
+      <!-- Job Title and Department -->
+      <div class="job-header">
+        <h3 class="job-title">{{ job.title }}</h3>
+      </div>
+
+      <!-- Salary Range -->
+      <div class="salary-section">
+        <div class="salary-label">
+          <mat-icon class="dollar-icon">attach_money</mat-icon>
+          <span>Salary Range</span>
+        </div>
+        <div class="salary-range">{{ getSalaryRange(job.minSalary, job.maxSalary) }}</div>
+        <div class="salary-details">
+          <span>Min: {{ formatSalary(job.minSalary) }}</span>
+          <span>Max: {{ formatSalary(job.maxSalary) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

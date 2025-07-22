@@ -1,0 +1,313 @@
+<div class="add-employee-container">
+  <!-- Back Navigation -->
+  <div class="back-link">
+    <a (click)="goBack()" class="back-button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Employee List
+    </a>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <svg class="header-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"/>
+        <circle cx="9" cy="7" r="4"/>
+        <line x1="19" y1="8" x2="19" y2="14"/>
+        <line x1="16" y1="11" x2="22" y2="11"/>
+      </svg>
+      <div class="header-text">
+        <h1>Add New Employee</h1>
+        <p>Enter the details for the new employee.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading form data...</p>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="success" class="success-message">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22,4 12,14.01 9,11.01"/>
+    </svg>
+    <span>{{ success }}</span>
+  </div>
+
+  <!-- Employee Form -->
+  <div *ngIf="!isLoading" class="form-container">
+    <div class="form-card">
+      <h2 class="form-title">Employee Information</h2>
+      
+      <form [formGroup]="addEmployeeForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="employeeName" class="form-label">
+              Full Name <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="employeeName"
+              formControlName="employeeName"
+              placeholder="Enter full name"
+              class="form-input"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('employeeName')?.touched && addEmployeeForm.get('employeeName')?.errors">
+              <span *ngIf="addEmployeeForm.get('employeeName')?.errors?.['required']">Full name is required.</span>
+            </div>
+          </div>
+
+          <!-- SSN -->
+          <div class="form-group">
+            <label for="ssn" class="form-label">
+              SSN <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="ssn"
+              formControlName="ssn"
+              (input)="formatSSN($event)"
+              placeholder="000-00-0000"
+              class="form-input"
+              maxlength="11"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('ssn')?.touched && addEmployeeForm.get('ssn')?.errors">
+              <span *ngIf="addEmployeeForm.get('ssn')?.errors?.['required']">SSN is required.</span>
+            </div>
+          </div>
+
+          <!-- Date of Birth -->
+          <div class="form-group">
+            <label for="dateOfBirth" class="form-label">
+              Date of Birth <span class="required">*</span>
+            </label>
+            <div class="input-with-icon">
+              <input
+                type="text"
+                id="dateOfBirth"
+                formControlName="dateOfBirth"
+                (input)="formatDate($event, 'dateOfBirth')"
+                placeholder="dd-mm-yyyy"
+                class="form-input"
+                maxlength="10"
+                required
+              >
+              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="form-error" *ngIf="addEmployeeForm.get('dateOfBirth')?.touched && addEmployeeForm.get('dateOfBirth')?.errors">
+              <span *ngIf="addEmployeeForm.get('dateOfBirth')?.errors?.['required']">Date of birth is required.</span>
+              <span *ngIf="addEmployeeForm.get('dateOfBirth')?.errors?.['date']">Enter a valid date (yyyy-MM-dd or dd-MM-yyyy).</span>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group">
+            <label for="phone" class="form-label">
+              Phone Number <span class="required">*</span>
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+              placeholder="+1 (555) 123-4567"
+              class="form-input"
+              maxlength="14"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('phone')?.touched && addEmployeeForm.get('phone')?.errors">
+              <span *ngIf="addEmployeeForm.get('phone')?.errors?.['required']">Phone number is required.</span>
+              <span *ngIf="addEmployeeForm.get('phone')?.errors?.['phone']">Phone number must be exactly 10 digits.</span>
+            </div>
+          </div>
+
+          <!-- Job Title -->
+          <div class="form-group">
+            <label for="title" class="form-label">
+              Job Title <span class="required">*</span>
+            </label>
+            <div class="select-wrapper">
+              <select
+                id="title"
+                formControlName="title"
+                class="form-select"
+                required
+              >
+                <option value="">Select job title</option>
+                <option *ngFor="let title of jobTitles" [value]="title">{{ title }}</option>
+              </select>
+              <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,9 12,15 18,9"/>
+              </svg>
+            </div>
+            <div class="form-error" *ngIf="addEmployeeForm.get('title')?.touched && addEmployeeForm.get('title')?.errors">
+              <span *ngIf="addEmployeeForm.get('title')?.errors?.['required']">Job title is required.</span>
+            </div>
+          </div>
+
+          <!-- Salary -->
+          <div class="form-group">
+            <label for="salary" class="form-label">
+              Annual Salary <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="salary"
+              formControlName="salary"
+              placeholder="Enter annual salary"
+              class="form-input"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('salary')?.touched && addEmployeeForm.get('salary')?.errors">
+              <span *ngIf="addEmployeeForm.get('salary')?.errors?.['required']">Salary is required.</span>
+              <span *ngIf="addEmployeeForm.get('salary')?.errors?.['pattern']">Salary must be a number.</span>
+            </div>
+          </div>
+
+          <!-- Address (full width) -->
+          <div class="form-group full-width">
+            <label for="address" class="form-label">
+              Address <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="address"
+              formControlName="address"
+              placeholder="Enter street address"
+              class="form-input"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('address')?.touched && addEmployeeForm.get('address')?.errors">
+              <span *ngIf="addEmployeeForm.get('address')?.errors?.['required']">Address is required.</span>
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="form-group">
+            <label for="city" class="form-label">
+              City <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="city"
+              formControlName="city"
+              placeholder="Enter city"
+              class="form-input"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('city')?.touched && addEmployeeForm.get('city')?.errors">
+              <span *ngIf="addEmployeeForm.get('city')?.errors?.['required']">City is required.</span>
+            </div>
+          </div>
+
+          <!-- State -->
+          <div class="form-group">
+            <label for="state" class="form-label">
+              State <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="state"
+              formControlName="state"
+              placeholder="Enter state"
+              class="form-input"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('state')?.touched && addEmployeeForm.get('state')?.errors">
+              <span *ngIf="addEmployeeForm.get('state')?.errors?.['required']">State is required.</span>
+            </div>
+          </div>
+
+          <!-- ZIP -->
+          <div class="form-group">
+            <label for="zip" class="form-label">
+              ZIP Code <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="zip"
+              formControlName="zip"
+              placeholder="Enter ZIP code"
+              class="form-input"
+              maxlength="10"
+              required
+            >
+            <div class="form-error" *ngIf="addEmployeeForm.get('zip')?.touched && addEmployeeForm.get('zip')?.errors">
+              <span *ngIf="addEmployeeForm.get('zip')?.errors?.['required']">ZIP code is required.</span>
+            </div>
+          </div>
+
+          <!-- Hire Date -->
+          <div class="form-group">
+            <label for="joinDate" class="form-label">
+              Hire Date <span class="required">*</span>
+            </label>
+            <div class="input-with-icon">
+              <input
+                type="text"
+                id="joinDate"
+                formControlName="joinDate"
+                (input)="formatDate($event, 'joinDate')"
+                placeholder="dd-mm-yyyy"
+                class="form-input"
+                maxlength="10"
+                required
+              >
+              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="form-error" *ngIf="addEmployeeForm.get('joinDate')?.touched && addEmployeeForm.get('joinDate')?.errors">
+              <span *ngIf="addEmployeeForm.get('joinDate')?.errors?.['required']">Hire date is required.</span>
+              <span *ngIf="addEmployeeForm.get('joinDate')?.errors?.['date']">Enter a valid date (yyyy-MM-dd or dd-MM-yyyy).</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isSubmitting"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10,9 9,9 8,9"/>
+            </svg>
+            <span *ngIf="!isSubmitting">Add Employee</span>
+            <span *ngIf="isSubmitting">Adding...</span>
+          </button>
+          
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onCancel()"
+            [disabled]="isSubmitting"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 
