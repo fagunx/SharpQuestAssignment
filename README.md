@@ -1,7 +1,5 @@
 # SharpQuestAssignment
 
-# SharpQuestAssignment
-
 A full-stack programming exercise solution for the SharpQuest interview assignment, demonstrating the ability to build a simple employee management system using modern development practices and clean, maintainable code.
 
 ---
